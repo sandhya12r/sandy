@@ -1,4 +1,4 @@
-import { Globe, Paperclip, Sparkle, Upload } from 'lucide-react'
+import { ArrowUp, Globe, Paperclip, Sparkle  } from 'lucide-react'
 import React, { useState } from 'react'
 
 interface PromptBoxprops {
@@ -10,7 +10,7 @@ const PromptBox: React.FC<PromptBoxprops> = ({ isLoading, setIsLoading }) => {
     return (
         <form className={`w-full ${false ? "max-w-3xl" : "max-w-2xl"} bg-[#404045] p-4 rounded-3xl mt-4 transition-all`}>
             <textarea
-                className='outline-none w-full resize-none overflow-hidden break-words bg-transparent'
+                className='outline-none w-full resize-none overf    low-hidden break-words bg-transparent'
                 rows={2}
                 placeholder='Message Sandy' required
                 onChange={(e) => setPrompt(e.target.value)} value={prompt}
@@ -28,8 +28,8 @@ const PromptBox: React.FC<PromptBoxprops> = ({ isLoading, setIsLoading }) => {
                 </div>
                 <div className='flex items-center gap-3'>
                     <span className='w-4 cursor-pointer'><Paperclip /></span>
-                    <button className={`${prompt ? "bg-amber-100" : "bg-[#71717a]"} rounded-full p-1 cursor-pointer`}>
-                        <span className='w-3.5 aspect-square'><Upload /></span>
+                    <button className={`${prompt ? "bg-[#E1BC6D]" : "bg-[#71717a]"} rounded-full p-1 cursor-pointer`}>
+                        <span className='w-3.5 aspect-square'><ArrowUp /></span>
                     </button>
                 </div>
             </div>
