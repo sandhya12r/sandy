@@ -1,8 +1,9 @@
 import { CircleUser, MenuIcon, MessageCircle, MessageCircleMore, PanelLeftOpen, PanelRightOpen, ShieldUser } from 'lucide-react'
 import Image from 'next/image'
-import React from 'react'
+import React, { useState } from 'react'
 import { useClerk, UserButton } from '@clerk/nextjs'
 import { useAppContext } from '@/context/AppContext';
+import ChatLabel from './ChatLabel';
 interface SidebarProps {
     expand: boolean;
     setExpand: React.Dispatch<React.SetStateAction<boolean>>;
@@ -11,6 +12,7 @@ const Sidebar: React.FC<SidebarProps> = ({ expand, setExpand }) => {
 
     const { openSignIn } = useClerk();
     const { user } = useAppContext();
+    const [openMuneu, setOpenMenu] = useState({ id: 0, open: false });
     return (
         <div className={`flex flex-col justify-between bg-[#212327] pt-7 transition-all z-50 max-md:absolute max-md:h-screen ${expand ? 'p-4 w-60' : 'md:w-20 w-0 max-md:overflow-hidden'}`}>
             <div>
@@ -40,8 +42,9 @@ const Sidebar: React.FC<SidebarProps> = ({ expand, setExpand }) => {
                 <div className={`mt-8 text-white/40 text-sm ${expand ? 'block' : 'hidden'}`}>
                     <p className='my-1'>Recents </p>
                     {/* chatlabel */}
+                    <ChatLabel openMenu={openMuneu} setOpenMenu={setOpenMenu} />
                 </div>
-            </div>
+            </div>      
             <div>
                 <div className={`flex items-center cursor-pointer group relative ${expand ? "gap-3 text-white/80 text-sm p-2.5 border border-[#E1BC6D] rounded-lg hover:bg-white/10" : "h-10 w-10 mx-auto hover:bg-gray-500/30 rounded-lg"}`}>
                     <span className={`${expand ? 'w-5' : 'w-6.5 mx-auto'}`}><ShieldUser /></span>
