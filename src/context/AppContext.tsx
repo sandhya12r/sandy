@@ -1,21 +1,32 @@
 "use client";
-import { createContext, useContext, ReactNode , useState, useEffect} from "react";
+import {
+  createContext,
+  useContext,
+  ReactNode,
+  useState,
+  useEffect,
+  Dispatch,
+  SetStateAction,
+} from "react";
 import { useAuth, useUser } from "@clerk/nextjs";
 import axios from "axios";
 import toast from "react-hot-toast";
 
+// Correctly typed context interface
 interface AppContextType {
   user: ReturnType<typeof useUser>["user"];
-  chats: any[]; 
-  setChats: (chats: any[]) => void; 
-  selectedChat: any; 
-  setSelectedChats: (selectedChat: any) => void; 
+  chats: any[];
+  setChats: Dispatch<SetStateAction<any[]>>;
+  selectedChat: any;
+  setSelectedChat: Dispatch<SetStateAction<any>>;
   fetchUsersChats: () => void;
   createNewChat: () => void;
 }
 
+// Create context
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
+// Custom hook for using context
 export const useAppContext = () => {
   const context = useContext(AppContext);
   if (!context) {
@@ -24,78 +35,88 @@ export const useAppContext = () => {
   return context;
 };
 
+// Provider component
 export const AppContextProvider = ({ children }: { children: ReactNode }) => {
   const { user } = useUser();
-  const {getToken} = useAuth();
+  const { getToken } = useAuth();
 
-  const [chats,  setChats] = useState([]);
-  const [selectedChat,  setSelectedChats] = useState([]);
+  const [chats, setChats] = useState<any[]>([]);
+  const [selectedChat, setSelectedChat] = useState<any>(null);
 
   const createNewChat = async () => {
     try {
-      if(!user) return null;
+      if (!user) return;
       const token = await getToken();
-      await axios.post("/api/chat/create", {}, {
-        headers: {
-          Authorization: `Bearer ${token}`
+      await axios.post(
+        "/api/chat/create",
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
-      })
+      );
     } catch (error: unknown) {
-  if (error instanceof Error) {
-    toast.error(error.message)
-  } else {
-    toast.error('An unknown error occurred')
-  }
-}
-  }
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("An unknown error occurred");
+      }
+    }
+  };
+
   const fetchUsersChats = async () => {
-    try{
+    try {
       const token = await getToken();
-    const { data} =  await axios.get("/api/chat/get", {
+      const { data } = await axios.get("/api/chat/get", {
         headers: {
-          Authorization: `Bearer ${token}`
-        } 
-      })
-      if(data.success){
-        console.log(data.data);
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (data.success) {
         setChats(data.data);
 
-        if(data.data.length === 0){
+        if (data.data.length === 0) {
           await createNewChat();
           return fetchUsersChats();
+        } else {
+          data.data.sort(
+            (a: any, b: any) =>
+              new Date(b.updatedAt).getTime() -
+              new Date(a.updatedAt).getTime()
+          );
+          setSelectedChat(data.data[0]);
         }
-        else{
-            data.data.sort((a:any,b:any)=> new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
-
-            setSelectedChats(data.data[0]);
-            console.log(data.data[0]);
-        }
-      }else{
-        toast.error(data.message)
+      } else {
+        toast.error(data.message);
       }
-    }catch(error: unknown){
-    if (error instanceof Error) {
-      toast.error(error.message)
-    } else {
-      toast.error('An unknown error occurred')
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("An unknown error occurred");
+      }
     }
-    }
-  }
+  };
 
   useEffect(() => {
-    if(user){
+    if (user) {
       fetchUsersChats();
     }
-  }, [user])
+  }, [user]);
+
   const value: AppContextType = {
     user,
     chats,
     setChats,
     selectedChat,
-    setSelectedChats,
+    setSelectedChat,
     fetchUsersChats,
-    createNewChat
+    createNewChat,
   };
 
-  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
+  return (
+    <AppContext.Provider value={value}>{children}</AppContext.Provider>
+  );
 };

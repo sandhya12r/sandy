@@ -1,5 +1,7 @@
+import { useAppContext } from '@/context/AppContext';
 import { ArrowUp, Globe, Paperclip, Sparkle  } from 'lucide-react'
 import React, { useState } from 'react'
+import toast from 'react-hot-toast';
 
 interface PromptBoxprops {
     isLoading: Boolean;
@@ -7,6 +9,18 @@ interface PromptBoxprops {
 }
 const PromptBox: React.FC<PromptBoxprops> = ({ isLoading, setIsLoading }) => {
     const [prompt, setPrompt] = useState('');
+    const {user, chats, setChats, selectedChat, setSelectedChat} = useAppContext();
+
+    const setPromptToChat = async (e: React.FormEvent<HTMLFormElement>) => {
+        const promptCopy = prompt;
+        try {
+            e.preventDefault();
+            if(!user ) return toast.error('Login to send Message');
+            
+        } catch (error) {
+            
+        }
+    }
     return (
         <form className={`w-full ${false ? "max-w-3xl" : "max-w-2xl"} bg-[#404045] p-4 rounded-3xl mt-4 transition-all`}>
             <textarea
