@@ -1,11 +1,24 @@
 import { Copy, Heart, Pencil, RotateCcw, ThumbsDown } from 'lucide-react';
 import Image from 'next/image';
-import React from 'react'
+import React, { useEffect } from 'react';
+import Markdown from 'react-markdown';
+import Prism from 'prismjs';
+import toast from 'react-hot-toast';
+
 interface MessageProps {
  role: string;
  content: string;
 }
 const Message: React.FC<MessageProps> = ({role, content}) => {
+
+  useEffect(() => {
+    Prism.highlightAll();
+  }, [content])
+
+  const copyMessage = () => {
+    navigator.clipboard.writeText(content);
+    toast.success('Message Copied');
+  }
   return (
     <div className='flex flex-col items-center w-full max-w-3xl text-sm'>
         <div className={`flex flex-col w-full mb-8 ${role=== 'user' && 'items-end'}`}>
@@ -15,12 +28,12 @@ const Message: React.FC<MessageProps> = ({role, content}) => {
                 {
                   role === 'user' ? (
                     <>
-                    <Copy className='w-4 cursor-pointer'/>
+                    <Copy onClick={copyMessage} className='w-4 cursor-pointer'/>
                     <Pencil className='w-4 cursor-pointer'/>
                     </>
                   ) : (
                     <>
-                    <Copy className='w-4.5 cursor-pointer'/>
+                    <Copy onClick={copyMessage} className='w-4.5 cursor-pointer'/>
                     <RotateCcw className='w-4 cursor-pointer'/>
                     <Heart className='w-4 cursor-pointer'/>
                     <ThumbsDown className='w-4 cursor-pointer'/>
@@ -36,7 +49,7 @@ const Message: React.FC<MessageProps> = ({role, content}) => {
 <>
                 <Image src="/fav.png" alt="logo" className='h-9 w-9 p-1 border border-white/15 rounded-full' width={200} height={200} />
 <div className='space-y-4 w-full overflow-scroll'>
-  {content}
+  <Markdown>{content}</Markdown>
 </div>
 </>              )
             }
